@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+    html {
+        height: 100%;
+    }
+    body{
+        background: black;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        place-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+    }
+    header{
+        height: 19%;
+        width: 100%;
+        background-color: transparent;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-inline: 20px;
+        padding-top: 1%;
+        padding-bottom: 1%;
+    }
+    .contenedor{
+        flex: 1;
+        background-color: transparent;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-left: 2%;
+        margin-right: 2%;
+    }
+    .el{
+        position: relative;
+        color: white;
+        border: solid 2px rgb(123, 0, 255);
+        background: rgb(0,0,0);
+        background: radial-gradient(circle, rgba(0,0,0,1) 52%, rgba(123,0,255,1) 100%);
+        height: 80%;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        display: flex;
+
+    }
+    .circulo {
+        position: absolute;
+        background: radial-gradient(circle, rgba(0,0,0,1) 47%, rgba(123,0,255,1) 100%);
+        border: solid 2px rgb(123, 0, 255); /*rgb(11, 202, 11)*/
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        
+    }
+    button{
+        background-color: transparent;
+        border: solid 2px rgb(123, 0, 255);
+        border-radius: 12px;
+        color: white;
+        padding: 6px;
+    }
+    button:hover{
+        transform: scale(1.1);
+        background-color: rgb(123, 0, 255);
+    }
+    .info{
+        background-color: transparent;
+        border: solid 2px rgb(123, 0, 255);
+        height: 100%;
+        width: 20%;
+        border-radius: 12px;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-left: 1%;
+    }
+
+
+
+
+</style>
+<body>  
+    <header>
+        <div class="info">
+            <div>X: </div>
+            <div>Y: </div>
+        </div>
+        <button>
+            Snapshoot
+        </button>
+        <div class="info">
+            <div>X: </div>
+            <div>Y: </div>
+        </div>
+    </header>
+        
+    <div class="contenedor">
+        <div class="el">
+            <div class="circulo"></div>
+        </div>
+        <div class="el">
+            <div class="circulo"></div>
+
+        </div>        
+    </div>
+    <script>
+        // Obtenemos los elementos del DOM
+        const contenedores = document.querySelectorAll('.el');
+    
+        // Iteramos sobre cada contenedor
+        contenedores.forEach(contenedor => {
+            const circulo = contenedor.querySelector('.circulo');
+            // Variables para almacenar la posición inicial del toque y la posición inicial del círculo
+            let initialX, initialY;
+    
+            // Función para iniciar el arrastre con eventos táctiles
+            const startDrag = e => {
+                const rect = circulo.getBoundingClientRect();
+                const touch = e.targetTouches[0];
+                initialX = touch.clientX - rect.left;
+                initialY = touch.clientY - rect.top;
+                document.addEventListener('touchmove', drag);
+                document.addEventListener('touchend', stopDrag);
+                //console.log(`x init ${initialX}/ y init ${initialY}`)
+                console.log(`stardrag rect left ${rect.left} top ${rect.top}`)
+            };
+    
+            // Función para mover el círculo con eventos táctiles
+            const drag = e => {
+                e.preventDefault();
+                const rect = contenedor.getBoundingClientRect();
+                const touch = e.targetTouches[0];
+                let offsetX = touch.clientX - rect.left - initialX;
+                let offsetY = touch.clientY - rect.top - initialY;
+                const newX = Math.min(Math.max(offsetX, 0), contenedor.clientWidth - circulo.offsetWidth);
+                const newY = Math.min(Math.max(offsetY, 0), contenedor.clientHeight - circulo.offsetHeight);
+                circulo.style.transform = `translate(${newX}px, ${newY}px)`;
+    
+                // Muestra la posición x e y del círculo
+                //console.log(`Posición X: ${newX}, Posición Y: ${newY}`);
+                //console.log(`x init ${initialX}/ y init ${initialY}`)
+                console.log(`drag rect left ${rect.left} top ${rect.top}`)
+            };
+    
+            // Función para detener el arrastre con eventos táctiles
+            const stopDrag = () => {
+                document.removeEventListener('touchmove', drag);
+                document.removeEventListener('touchend', stopDrag);
+                // Lleva el círculo al centro del contenedor
+                const rect = contenedor.getBoundingClientRect();
+                const centerX = (contenedor.clientWidth - circulo.offsetWidth) / 2;
+                const centerY = (contenedor.clientHeight - circulo.offsetHeight) / 2;
+                circulo.style.transform = `translate(${centerX}px, ${centerY}px)`;
+
+                //console.log(`Posición X: ${newX}, Posición Y: ${newY}`);
+            };
+    
+            // Evento de inicio de arrastre al tocar el círculo en dispositivos táctiles
+            circulo.addEventListener('touchstart', startDrag);
+    
+            document.body.addEventListener('touchmove', function(event) {
+                event.preventDefault(); // Prevenir el comportamiento predeterminado del desplazamiento
+            }, { passive: false });
+        });
+    </script>
+</body>
+
+</html>
